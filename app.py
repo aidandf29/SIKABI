@@ -211,11 +211,12 @@ st.markdown(
     .sikabi-brand-row {{
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 4px;
         max-width: 1180px;
     }}
     .sikabi-hero-logo {{
-        flex: 0 0 215px;
+        flex: 0 0 185px;
+        min-width: 0;
         display: flex;
         align-items: center;
         justify-content: flex-start;
@@ -343,7 +344,7 @@ def dashboard_hero(df):
     logo = f"data:image/png;base64,{LOGO_B64}" if LOGO_B64 else ""
 
     logo_html = (
-        f'<img src="{logo}" style="width:300px; max-width:none; max-height:135px; transform:translateX(-2px); object-fit:contain; object-position:left center;">'
+        f'<img src="{logo}" style="width:280px; max-width:none; max-height:145px; transform:translateX(-2px); object-fit:contain; object-position:left center;">'
         if logo else ""
     )
 
