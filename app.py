@@ -189,7 +189,7 @@ st.markdown(
 def page_header(title):
     """Render the SIKABI logo above the page title in the main content area."""
     if logo_img:
-        st.image(logo_img, width=190)
+        st.image(logo_img, width=350)
     st.markdown(f"## {title}")
 
 
