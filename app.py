@@ -265,19 +265,20 @@ with st.sidebar:
     )
 
     NAV_ITEMS = [
-        ("Dashboard", "📊"),
-        ("Data Pegawai", "👥"),
-        ("Gate Keputusan", "🛡️"),
-        ("Master Data", "🗄️"),
+        ("Dashboard", "dashboard"),
+        ("Data Pegawai", "group"),
+        ("Gate Keputusan", "verified_user"),
+        ("Master Data", "database"),
     ]
 
     if "nav_page" not in st.session_state:
         st.session_state.nav_page = "Dashboard"
 
-    for label, icon in NAV_ITEMS:
+    for label, icon_name in NAV_ITEMS:
         is_active = st.session_state.nav_page == label
         if st.button(
-            f"{icon}  {label}",
+            label,
+            icon=f":material/{icon_name}:",
             key=f"nav_{label}",
             use_container_width=True,
             type="primary" if is_active else "secondary",
@@ -294,13 +295,15 @@ with st.sidebar:
     st.divider()
 
     st.download_button(
-        "⬇️  Unduh data (.xlsx)",
+        "Unduh data (.xlsx)",
+        icon=":material/download:",
         data=workbook_bytes(),
         file_name="sikabi_data.xlsx",
         use_container_width=True,
     )
     st.button(
-        "🔄  Sinkronisasi data dengan HRIS & KATALIS",
+        "Sinkronisasi data dengan HRIS & KATALIS",
+        icon=":material/sync:",
         use_container_width=True,
         disabled=True,
         help="Integrasi belum tersedia — memerlukan koneksi API HRIS dan KATALIS BI.",
