@@ -545,7 +545,7 @@ def page_dashboard(df):
         f_satker = fcol2.multiselect("Satuan kerja", SATKER_OPTS, default=SATKER_OPTS)
         f_kuadran = fcol3.multiselect("Kuadran", ["I", "II", "III", "IV"], default=["I", "II", "III", "IV"])
 
-    kpp_pop = df[df["Masuk_Proses_KPP"]]
+    kpp_pop = df[df["Masuk_Kuadran"]]
     scoped = kpp_pop[kpp_pop["Pangkat"].isin(f_pangkat) & kpp_pop["Satker"].isin(f_satker)]
     visible = scoped[scoped["Kuadran"].isin(f_kuadran)]
 
@@ -554,14 +554,12 @@ def page_dashboard(df):
 
     with left:
         with st.container(border=True):
-            st.markdown(f"**Peta Kuadran** &nbsp;·&nbsp; {len(visible)} dari {len(kpp_pop)} pegawai Proses KPP")
-            # st.caption(
-            #     "Hanya pegawai **Grade Senior** yang lolos Kriteria KPP yang masuk di sini "
-            #     "(Grade Reguler mengikuti jalur Promosi Grade tersendiri, lihat tab Penentuan Kandidat KPP). "
-            #     "Sumbu = selisih QScore dan Masa Dinas Pangkat (MDP = MDG + MDGS) terhadap **rata-rata "
-            #     "pangkatnya masing-masing** — bukan rata-rata gabungan semua pangkat. Titik di kanan-atas "
-            #     "dari garis 0,0 = Kuadran I, dan seterusnya searah jarum jam."
-            # )
+            st.markdown(f"**Peta Kuadran** &nbsp;·&nbsp; {len(visible)} dari {len(kpp_pop)} pegawai Ready Now")
+            st.caption(
+                "Kuadran ini hanya berisi pegawai **Ready Now** (Grade Senior, lolos Kriteria KPP, "
+                "dan MDGS sudah memenuhi threshold promosi pangkat) — dipakai sebagai ranking "
+                "prioritas promosi. Pegawai Ready Next (MDGS belum cukup) belum masuk ranking ini."
+            )
             if len(visible) > 0:
                 fig = go.Figure()
                 for k in ["I", "II", "III", "IV"]:
