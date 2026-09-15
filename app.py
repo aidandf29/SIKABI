@@ -119,6 +119,8 @@ st.markdown(
         color: #FFFFFF !important;
         border-radius: 6px !important;
     }}
+    span[data-baseweb="tag"] svg {{ fill: #FFFFFF !important; }}
+    ul[data-baseweb="menu"] li:hover {{ background-color: rgba(47,122,111,0.12) !important; }}
     div[data-baseweb="select"] > div {{
         border-radius: 8px !important;
         border-color: {LINE} !important;
