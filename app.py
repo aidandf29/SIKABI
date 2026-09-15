@@ -304,8 +304,8 @@ with st.sidebar:
     st.button(
         "Sinkronisasi data dengan HRIS & KATALIS",
         icon=":material/sync:",
-        # use_container_width=True,
-        disabled=True,
+        use_container_width=True,
+        # disabled=True,
         help="Integrasi belum tersedia — memerlukan koneksi API HRIS dan KATALIS BI.",
     )
 
