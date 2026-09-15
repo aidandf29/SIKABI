@@ -100,10 +100,18 @@ st.markdown(
         border: 1px solid rgba(255,255,255,0.15);
         color: #FFFFFF !important;
         width: 100%;
+        text-align: left;
+        justify-content: flex-start;
     }}
     div[data-testid="stSidebar"] .stButton > button:disabled {{
         opacity: 0.45;
         color: #FFFFFF !important;
+    }}
+    div[data-testid="stSidebar"] button[kind="primary"] {{
+        background: {TEAL} !important;
+        border: 1px solid {TEAL} !important;
+        color: #FFFFFF !important;
+        font-weight: 600;
     }}
 
     /* Primary-styled buttons (kind=primary) */
@@ -249,29 +257,28 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
-    NAV_OPTIONS = ["Dashboard", "Data Pegawai", "Gate Keputusan", "Master Data"]
-    NAV_ICONS = ["speedometer2", "people", "shield-check", "database"]
+    NAV_ITEMS = [
+        ("Dashboard", "📊"),
+        ("Data Pegawai", "👥"),
+        ("Gate Keputusan", "🛡️"),
+        ("Master Data", "🗄️"),
+    ]
 
-    try:
-        from streamlit_option_menu import option_menu
+    if "nav_page" not in st.session_state:
+        st.session_state.nav_page = "Dashboard"
 
-        page = option_menu(
-            menu_title=None,
-            options=NAV_OPTIONS,
-            icons=NAV_ICONS,
-            default_index=0,
-            styles={
-                "container": {"padding": "0", "background-color": "transparent"},
-                "icon": {"color": "rgba(255,255,255,0.7)", "font-size": "15px"},
-                "nav-link": {
-                    "font-size": "14px", "color": "rgba(255,255,255,0.75)",
-                    "border-radius": "8px", "margin": "3px 0", "padding": "10px 12px",
-                },
-                "nav-link-selected": {"background-color": TEAL, "color": "#FFFFFF"},
-            },
-        )
-    except ImportError:
-        page = st.radio("Menu", NAV_OPTIONS, label_visibility="collapsed")
+    for label, icon in NAV_ITEMS:
+        is_active = st.session_state.nav_page == label
+        if st.button(
+            f"{icon}  {label}",
+            key=f"nav_{label}",
+            use_container_width=True,
+            type="primary" if is_active else "secondary",
+        ):
+            st.session_state.nav_page = label
+            st.rerun()
+
+    page = st.session_state.nav_page
 
     st.divider()
     st.caption(f"Total populasi ·  **{len(df):,}** pegawai".replace(",", "."))
