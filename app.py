@@ -26,7 +26,8 @@ from scoring import (
 
 BASE_DIR = os.path.dirname(__file__)
 DATA_PATH = os.path.join(BASE_DIR, "data", "sikabi_data.xlsx")
-LOGO_PATH = os.path.join(BASE_DIR, "assets", "logo header.png")
+SIDEBAR_LOGO_PATH = os.path.join(BASE_DIR, "assets", "Sikabi.png")
+HERO_LOGO_PATH = os.path.join(BASE_DIR, "assets", "logo header.png")
 HERO_BG_PATH = os.path.join(BASE_DIR, "assets", "background.png")
 
 REF_SHEETS = [
@@ -52,7 +53,7 @@ RED = "#B0574A"
 KUADRAN_COLOR = {"I": "#2F7A6F", "II": "#6E9750", "III": "#B9821F", "IV": "#B0574A"}
 KUADRAN_BG = {"I": "#EEF7F5", "II": "#F1F6EC", "III": "#FBF5E9", "IV": "#FAEFEC"}
 
-logo_img = Image.open(LOGO_PATH) if os.path.exists(LOGO_PATH) else None
+logo_img = Image.open(SIDEBAR_LOGO_PATH) if os.path.exists(SIDEBAR_LOGO_PATH) else None
 
 st.set_page_config(
     page_title="SIKABI",
@@ -191,12 +192,12 @@ st.markdown(
         max-width: 100% !important;
         padding-left: 1.25rem !important;
         padding-right: 1.25rem !important;
-        padding-top: 0.75rem !important;
+        padding-top: 0.15rem !important;
     }}
     .sikabi-hero {{
         width: calc(100% + 2.5rem);
         min-height: 385px;
-        margin: -0.75rem -1.25rem 1.25rem -1.25rem;
+        margin: -0.15rem -1.25rem 1.25rem -1.25rem;
         background-size: cover;
         background-position: center 45%;
         border-radius: 0 0 14px 14px;
@@ -310,7 +311,7 @@ def _img_b64(path):
         return base64.b64encode(f.read()).decode("utf-8")
 
 
-LOGO_B64 = _img_b64(LOGO_PATH)
+LOGO_B64 = _img_b64(HERO_LOGO_PATH)
 HERO_BG_B64 = _img_b64(HERO_BG_PATH)
 
 
