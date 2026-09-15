@@ -305,7 +305,7 @@ with st.sidebar:
         "Sinkronisasi data dengan HRIS & KATALIS",
         icon=":material/sync:",
         # use_container_width=True,
-        disabled=false,
+        disabled= False,
         help="Integrasi belum tersedia — memerlukan koneksi API HRIS dan KATALIS BI.",
     )
 
