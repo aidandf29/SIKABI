@@ -211,7 +211,7 @@ st.markdown(
     .sikabi-brand-row {{
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 18px;
         max-width: 1180px;
     }}
     .sikabi-hero-logo {{
@@ -746,8 +746,16 @@ def page_gate(df):
 
     tab1, tab2, tab3 = st.tabs(["Syarat Administrasi", "Kriteria KPP", "Grade Senior / MDG"])
 
-    # Filter ditempatkan langsung di dalam masing-masing tab agar selalu
-    # tampil tepat di atas metrik dan tabel yang sedang dilihat.
+    # Filter diletakkan setelah card angka, tetapi sebelum tabel.
+    # Nilai filter dibaca dari session_state agar card tetap mengikuti pilihan
+    # filter terakhir meskipun kontrolnya secara visual berada di bawah card.
+    def get_gate_view(tab_key):
+        pangkat_key = f"gate_pangkat_{tab_key}"
+        status_key = f"gate_status_{tab_key}"
+        f_pangkat = st.session_state.get(pangkat_key, PANGKAT_OPTS)
+        f_status = st.session_state.get(status_key, STATUS_OPTS)
+        return df[df["Pangkat"].isin(f_pangkat) & df["Status_Akhir"].isin(f_status)]
+
     def gate_filters(tab_key):
         with st.container(border=True):
             fcol1, fcol2 = st.columns(2)
@@ -762,29 +770,33 @@ def page_gate(df):
         return df[df["Pangkat"].isin(f_pangkat) & df["Status_Akhir"].isin(f_status)]
 
     with tab1:
-        view = gate_filters("admin")
+        view = get_gate_view("admin")
         total = len(view)
         lolos = int(view["Lolos_Administrasi"].sum())
         m1, m2 = st.columns(2)
         m1.metric("Lolos Administrasi", f"{lolos:,}".replace(",", "."))
         m2.metric("Tidak Lolos", f"{total - lolos:,}".replace(",", "."))
+        # Filter berada di bawah card dan tepat di atas tabel.
+        view = gate_filters("admin")
         cols = ["Nama", "Pangkat"] + list(ADMIN_CHECK_LABELS.keys()) + ["Lolos_Administrasi"]
         show = view[cols].rename(columns={**ADMIN_CHECK_LABELS, "Lolos_Administrasi": "LOLOS ADMINISTRASI"})
         st.dataframe(format_boolean_table(show), use_container_width=True, hide_index=True, height=420)
 
     with tab2:
-        view = gate_filters("kpp")
+        view = get_gate_view("kpp")
         admin_pop = view[view["Lolos_Administrasi"]]
         lolos_kpp = int(admin_pop["Lolos_KPP"].sum())
         m1, m2 = st.columns(2)
         m1.metric("Lolos Kriteria KPP", f"{lolos_kpp:,}".replace(",", "."))
         m2.metric("Dari yang lolos administrasi", f"{len(admin_pop):,}".replace(",", "."))
+        # Filter berada di bawah card dan tepat di atas tabel.
+        view = gate_filters("kpp")
         cols = ["Nama", "Pangkat", "Passing_Grade_QScore", "QScore"] + list(KPP_CHECK_LABELS.keys()) + ["Lolos_KPP"]
         show = view[cols].rename(columns={**KPP_CHECK_LABELS, "Lolos_KPP": "LOLOS KPP"})
         st.dataframe(format_boolean_table(show), use_container_width=True, hide_index=True, height=420)
 
     with tab3:
-        view = gate_filters("grade")
+        view = get_gate_view("grade")
         kpp_pop = view[view["Lolos_KPP"]]
         n_senior = int((view["Status_Akhir"] == "Proses KPP").sum())
         n_ready_grade = int((view["Status_Akhir"] == "Ready Promosi Grade").sum())
@@ -793,6 +805,8 @@ def page_gate(df):
         m1.metric("Senior → Proses KPP", f"{n_senior:,}".replace(",", "."))
         m2.metric("Reguler siap naik Grade", f"{n_ready_grade:,}".replace(",", "."))
         m3.metric("Reguler belum siap", f"{n_belum_grade:,}".replace(",", "."))
+        # Filter berada di bawah card dan tepat di atas tabel.
+        view = gate_filters("grade")
         cols = [
             "Nama", "Pangkat", "Sublevel", "Is_Senior",
             "MDG_Tahun", "Chk_Ready_Promosi_Grade",
@@ -805,6 +819,7 @@ def page_gate(df):
             "Chk_Ready_Promosi_Pangkat": "MDGS >= threshold?",
         })
         st.dataframe(format_boolean_table(show), use_container_width=True, hide_index=True, height=420)
+
 
 
 # ---------------------------------------------------------------------------
