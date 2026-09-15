@@ -166,17 +166,24 @@ def compute_all(employees: pd.DataFrame, refs: dict) -> pd.DataFrame:
         return "Ready Promosi Grade" if row["Chk_Ready_Promosi_Grade"] else "Belum Siap Promosi Grade"
 
     df["Status_Akhir"] = df.apply(routing, axis=1)
-    # Hanya pegawai Grade Senior yang lolos KPP yang masuk Readiness KPP & Kuadran.
+    # Masuk_Proses_KPP: pegawai Grade Senior yang lolos KPP (Ready Now + Ready Next),
+    # dipakai untuk statistik umum & tab Gate Keputusan.
     # Pegawai Reguler (walau lolos KPP) tetap di jalur Promosi Grade, TIDAK masuk kuadran.
     df["Masuk_Proses_KPP"] = df["Status_Akhir"] == "Proses KPP"
 
-    # ---------- Kuadran (hanya populasi Grade Senior di Proses KPP, mean dihitung per pangkat) ----------
-    kpp_pop = df[df["Masuk_Proses_KPP"]]
+    # Masuk_Kuadran: subset dari Masuk_Proses_KPP yang SUDAH Ready Now
+    # (MDGS >= threshold promosi pangkat). Kuadran berfungsi sebagai ranking
+    # prioritas promosi, jadi hanya berisi kandidat yang sudah benar-benar
+    # siap dipromosikan sekarang — pegawai Ready Next TIDAK masuk di sini.
+    df["Masuk_Kuadran"] = df["Masuk_Proses_KPP"] & df["Chk_Ready_Promosi_Pangkat"]
+
+    # ---------- Kuadran (hanya populasi Ready Now, mean dihitung per pangkat) ----------
+    kpp_pop = df[df["Masuk_Kuadran"]]
     mean_q_map = kpp_pop.groupby("Pangkat")["QScore"].mean().to_dict()
     mean_m_map = kpp_pop.groupby("Pangkat")["MDP_Tahun"].mean().to_dict()
 
     def kuadran_row(row):
-        if not row["Masuk_Proses_KPP"]:
+        if not row["Masuk_Kuadran"]:
             return None
         mq = mean_q_map.get(row["Pangkat"], row["QScore"])
         mm = mean_m_map.get(row["Pangkat"], row["MDP_Tahun"])
