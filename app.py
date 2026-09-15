@@ -8,6 +8,7 @@ Jalankan lokal:
 
 import io
 import os
+import base64
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -26,6 +27,7 @@ from scoring import (
 BASE_DIR = os.path.dirname(__file__)
 DATA_PATH = os.path.join(BASE_DIR, "data", "sikabi_data.xlsx")
 LOGO_PATH = os.path.join(BASE_DIR, "assets", "Sikabi.png")
+HERO_BG_PATH = os.path.join(BASE_DIR, "assets", "background.png")
 
 REF_SHEETS = [
     "Quant_Weights", "Qual_Weights", "Rank_Weights",
@@ -182,17 +184,165 @@ st.markdown(
     .sikabi-quad-row.quad-III {{ background: #FBF5E9; border-color: #E5C98E; }}
     .sikabi-quad-row.quad-IV {{ background: #FAEFEC; border-color: #DFB8AF; }}
     .sikabi-dot {{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:8px; }}
+
+    /* Rajawali-inspired dashboard hero */
+    .sikabi-hero {{
+        width: 100%;
+        min-height: 385px;
+        margin: -1.5rem 0 1.25rem 0;
+        background-size: cover;
+        background-position: center 45%;
+        border-radius: 0 0 14px 14px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(15,33,48,0.14);
+        color: #FFFFFF !important;
+    }}
+    .sikabi-hero-inner {{
+        padding: 42px 48px 34px 48px;
+    }}
+    .sikabi-brand-row {{
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        max-width: 1050px;
+    }}
+    .sikabi-hero-logo {{
+        flex: 0 0 105px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.28));
+    }}
+    .sikabi-hero-title {{
+        font-size: 3.15rem;
+        line-height: 1.05;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: #FFFFFF !important;
+        text-shadow: 1px 2px 5px rgba(0,0,0,0.42);
+    }}
+    .sikabi-hero-subtitle {{
+        margin-top: 5px;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #D8F0EC !important;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+    }}
+    .sikabi-hero-description {{
+        margin-top: 10px;
+        max-width: 900px;
+        font-size: 1rem;
+        line-height: 1.55;
+        color: rgba(255,255,255,0.92) !important;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.55);
+    }}
+    .sikabi-hero-panel {{
+        margin-top: 30px;
+        padding: 25px 28px 22px 28px;
+        border-radius: 14px;
+        background: rgba(8,18,25,0.58);
+        border: 1px solid rgba(255,255,255,0.17);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+        backdrop-filter: blur(9px);
+    }}
+    .sikabi-hero-panel-title {{
+        font-size: 1.7rem;
+        font-weight: 750;
+        color: #FFFFFF !important;
+        margin-bottom: 20px;
+    }}
+    .sikabi-hero-metrics {{
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 26px;
+    }}
+    .hero-label {{
+        font-size: 0.82rem;
+        color: rgba(255,255,255,0.72) !important;
+        margin-bottom: 5px;
+    }}
+    .hero-value {{
+        font-size: 2rem;
+        line-height: 1.05;
+        font-weight: 800;
+        color: #FFFFFF !important;
+    }}
+    .hero-teal {{ color: #6FC5B8 !important; }}
+    .hero-red {{ color: #E78C7E !important; }}
+    .hero-sub {{
+        margin-top: 5px;
+        font-size: 0.78rem;
+        color: rgba(255,255,255,0.62) !important;
+    }}
+    @media (max-width: 900px) {{
+        .sikabi-hero-inner {{ padding: 32px 24px 26px 24px; }}
+        .sikabi-brand-row {{ align-items: flex-start; }}
+        .sikabi-hero-title {{ font-size: 2.4rem; }}
+        .sikabi-hero-subtitle {{ font-size: 1.05rem; }}
+        .sikabi-hero-metrics {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+    }}
     </style>
     """,
     unsafe_allow_html=True,
 )
 
 
+def _img_b64(path):
+    if not os.path.exists(path):
+        return None
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode("utf-8")
+
+
+LOGO_B64 = _img_b64(LOGO_PATH)
+HERO_BG_B64 = _img_b64(HERO_BG_PATH)
+
+
 def page_header(title):
-    """Render the SIKABI logo above the page title in the main content area."""
-    if logo_img:
-        st.image(logo_img, width=190)
+    """Render a clean page title without a duplicate logo above it."""
     st.markdown(f"## {title}")
+
+
+def dashboard_hero(df):
+    """Rajawali-inspired hero banner using the local SIKABI background asset."""
+    total = len(df)
+    admin = int(df["Lolos_Administrasi"].sum())
+    kpp = int(df["Lolos_KPP"].sum())
+    gt = int((df["Status_Akhir"] == "General Talent").sum())
+
+    bg = f"data:image/png;base64,{HERO_BG_B64}" if HERO_BG_B64 else ""
+    logo = f"data:image/png;base64,{LOGO_B64}" if LOGO_B64 else ""
+
+    logo_html = (
+        f'<img src="{logo}" style="width:105px; max-height:105px; object-fit:contain;">'
+        if logo else ""
+    )
+
+    hero_html = f"""
+    <div class="sikabi-hero" style="background-image:linear-gradient(90deg, rgba(7,24,36,0.82) 0%, rgba(7,24,36,0.66) 45%, rgba(7,24,36,0.58) 100%), url('{bg}');">
+        <div class="sikabi-hero-inner">
+            <div class="sikabi-brand-row">
+                <div class="sikabi-hero-logo">{logo_html}</div>
+                <div>
+                    <div class="sikabi-hero-title">SIKABI</div>
+                    <div class="sikabi-hero-subtitle">Sistem Intelijen Karier Bank Indonesia</div>
+                    <div class="sikabi-hero-description">Dashboard intelijen karier untuk mendukung analisis potensi, kesiapan promosi, dan prioritisasi kandidat KPP secara terintegrasi.</div>
+                </div>
+            </div>
+
+            <div class="sikabi-hero-panel">
+                <div class="sikabi-hero-panel-title">Dashboard Kuadran &amp; Laporan</div>
+                <div class="sikabi-hero-metrics">
+                    <div><div class="hero-label">Total Populasi</div><div class="hero-value">{total:,}</div><div class="hero-sub">Periode 2026 semester II</div></div>
+                    <div><div class="hero-label">Lolos Administrasi</div><div class="hero-value">{admin:,}</div><div class="hero-sub">{df['Lolos_Administrasi'].mean()*100:.0f}% dari populasi</div></div>
+                    <div><div class="hero-label">Lolos Kriteria KPP</div><div class="hero-value hero-teal">{kpp:,}</div><div class="hero-sub">Kandidat lolos kriteria</div></div>
+                    <div><div class="hero-label">General Talent</div><div class="hero-value hero-red">{gt:,}</div><div class="hero-sub">Talent pool</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    """
+    st.markdown(hero_html, unsafe_allow_html=True)
 
 
 def metric_card(label, value, sub=None, accent=None):
@@ -329,19 +479,7 @@ with st.sidebar:
 # Page: Dashboard
 # ---------------------------------------------------------------------------
 def page_dashboard(df):
-    page_header("Dashboard — Kuadran & Laporan")
-
-    c1, c2, c3, c4 = st.columns(4)
-    with c1:
-        metric_card("Total populasi", f"{len(df):,}".replace(",", "."), "Periode 2026 semester II")
-    with c2:
-        metric_card("Lolos administrasi", f"{int(df['Lolos_Administrasi'].sum()):,}".replace(",", "."),
-                     f"{df['Lolos_Administrasi'].mean()*100:.0f}% dari populasi")
-    with c3:
-        metric_card("Lolos kriteria KPP", f"{int(df['Lolos_KPP'].sum()):,}".replace(",", "."), accent=TEAL)
-    with c4:
-        gt = int((df["Status_Akhir"] == "General Talent").sum())
-        metric_card("General talent", f"{gt:,}".replace(",", "."), accent=RED)
+    dashboard_hero(df)
 
     st.write("")
     with st.container(border=True):
