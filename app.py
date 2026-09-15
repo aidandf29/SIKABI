@@ -73,6 +73,11 @@ st.markdown(
     h1, h2, h3, h4 {{ color: {INK}; font-weight: 600; }}
     p, span, label, div {{ color: {INK}; }}
 
+    /* Main-page branding: logo sits above each page title */
+    [data-testid="stImage"] {{
+        margin-bottom: 0.15rem;
+    }}
+
     /* Sidebar */
     section[data-testid="stSidebar"] {{
         background: {BRAND_DEEP};
@@ -181,6 +186,13 @@ st.markdown(
 )
 
 
+def page_header(title):
+    """Render the SIKABI logo above the page title in the main content area."""
+    if logo_img:
+        st.image(logo_img, width=190)
+    st.markdown(f"## {title}")
+
+
 def metric_card(label, value, sub=None, accent=None):
     color = accent or INK
     sub_html = f'<div class="sikabi-metric-sub">{sub}</div>' if sub else ""
@@ -254,17 +266,6 @@ STATUS_OPTS = ["Proses KPP", "Ready Promosi Grade", "Belum Siap Promosi Grade", 
 # Sidebar navigation
 # ---------------------------------------------------------------------------
 with st.sidebar:
-    if logo_img:
-        st.image(logo_img, use_container_width=True)
-    else:
-        st.markdown("### 🏦 SIKABI")
-
-    st.markdown(
-        "<div style='text-align:center;font-size:12px;color:rgba(255,255,255,0.55);"
-        "margin-top:-6px;margin-bottom:14px;'>DSDM · Bank Indonesia</div>",
-        unsafe_allow_html=True,
-    )
-
     NAV_ITEMS = [
         ("Dashboard", "dashboard"),
         ("Data Pegawai", "group"),
@@ -315,7 +316,7 @@ with st.sidebar:
 # Page: Dashboard
 # ---------------------------------------------------------------------------
 def page_dashboard(df):
-    st.markdown("## Dashboard — Kuadran & Laporan")
+    page_header("Dashboard — Kuadran & Laporan")
 
     c1, c2, c3, c4 = st.columns(4)
     with c1:
@@ -449,7 +450,7 @@ def page_dashboard(df):
 # Page: Data Pegawai
 # ---------------------------------------------------------------------------
 def page_pegawai(df):
-    st.markdown("## Data Pegawai & Rincian Penilaian")
+    page_header("Data Pegawai & Rincian Penilaian")
     # st.caption("Data pegawai bersifat tetap (ditarik dari sumber lain) — setiap skor bisa ditelusuri ke kolom mentahnya di sebelah kanan.")
 
     with st.container(border=True):
@@ -533,7 +534,7 @@ def page_pegawai(df):
 # Page: Gate Keputusan
 # ---------------------------------------------------------------------------
 def page_gate(df):
-    st.markdown("## Penentuan Kandidat KPP BI Wide")
+    page_header("Penentuan Kandidat KPP BI Wide")
     # st.caption(
     #     "Alur: Syarat Administrasi → Kriteria KPP → cek Grade. Pegawai **Reguler** yang lolos "
     #     "diarahkan ke jalur Promosi Grade; pegawai **Senior** yang lolos masuk ke Readiness KPP "
@@ -641,7 +642,7 @@ def crud_section(sheet, key_col, value_cols, value_step=0.01, value_format="%.4f
 
 
 def page_master():
-    st.markdown("## Pengaturan")
+    page_header("Pengaturan")
     st.caption(
         "Tabel referensi yang menentukan bobot & konversi skor. "
         "Data pegawai TIDAK dikelola di sini — dianggap sumber tetap dari sistem lain."
