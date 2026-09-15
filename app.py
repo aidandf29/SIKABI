@@ -261,15 +261,15 @@ with st.sidebar:
 
     st.markdown(
         "<div style='text-align:center;font-size:12px;color:rgba(255,255,255,0.55);"
-        "margin-top:-6px;margin-bottom:14px;'>Direktorat SDM · Bank Indonesia</div>",
+        "margin-top:-6px;margin-bottom:14px;'>DSDM · Bank Indonesia</div>",
         unsafe_allow_html=True,
     )
 
     NAV_ITEMS = [
         ("Dashboard", "dashboard"),
         ("Data Pegawai", "group"),
-        ("Gate Keputusan", "verified_user"),
-        ("Master Data", "database"),
+        ("Penentuan Kandidat KPP", "verified_user"),
+        ("Pengaturan", "database"),
     ]
 
     if "nav_page" not in st.session_state:
@@ -290,7 +290,7 @@ with st.sidebar:
     page = st.session_state.nav_page
 
     st.divider()
-    st.caption(f"Total populasi ·  **{len(df):,}** pegawai".replace(",", "."))
+    st.caption(f"Total pegawai ·  **{len(df):,}**".replace(",", "."))
     st.caption(f"Lolos administrasi ·  **{int(df['Lolos_Administrasi'].sum()):,}**".replace(",", "."))
     st.caption(f"Proses KPP ·  **{int(df['Masuk_Proses_KPP'].sum()):,}**".replace(",", "."))
     st.divider()
@@ -348,7 +348,7 @@ def page_dashboard(df):
             st.markdown(f"**Peta Kuadran** &nbsp;·&nbsp; {len(visible)} dari {len(kpp_pop)} pegawai Proses KPP")
             # st.caption(
             #     "Hanya pegawai **Grade Senior** yang lolos Kriteria KPP yang masuk di sini "
-            #     "(Grade Reguler mengikuti jalur Promosi Grade tersendiri, lihat tab Gate Keputusan). "
+            #     "(Grade Reguler mengikuti jalur Promosi Grade tersendiri, lihat tab Penentuan Kandidat KPP). "
             #     "Sumbu = selisih QScore dan Masa Dinas Pangkat (MDP = MDG + MDGS) terhadap **rata-rata "
             #     "pangkatnya masing-masing** — bukan rata-rata gabungan semua pangkat. Titik di kanan-atas "
             #     "dari garis 0,0 = Kuadran I, dan seterusnya searah jarum jam."
@@ -412,11 +412,11 @@ def page_dashboard(df):
     st.write("")
     with st.container(border=True):
         st.markdown("**Distribusi Readiness Promosi**")
-        st.caption(
-            "Ready Now/Next dihitung dari MDGS (masa dinas grade senior) vs threshold promosi pangkat. "
-            "Ready/Belum Siap Promosi Grade dihitung dari MDG (masa dinas grade) vs threshold naik grade "
-            "untuk pegawai Reguler. Tidak Eligible = tidak lolos Administrasi/Kriteria KPP."
-        )
+        # st.caption(
+        #     "Ready Now/Next dihitung dari MDGS (masa dinas grade senior) vs threshold promosi pangkat. "
+        #     "Ready/Belum Siap Promosi Grade dihitung dari MDG (masa dinas grade) vs threshold naik grade "
+        #     "untuk pegawai Reguler. Tidak Eligible = tidak lolos Administrasi/Kriteria KPP."
+        # )
         scoped_admin = df[df["Pangkat"].isin(f_pangkat) & df["Satker"].isin(f_satker)]
         counts = scoped_admin["Readiness"].value_counts().reindex(READINESS_ORDER).fillna(0)
         fig2 = go.Figure(go.Bar(
@@ -450,7 +450,7 @@ def page_dashboard(df):
 # ---------------------------------------------------------------------------
 def page_pegawai(df):
     st.markdown("## Data Pegawai & Rincian Penilaian")
-    st.caption("Data pegawai bersifat tetap (ditarik dari sumber lain) — setiap skor bisa ditelusuri ke kolom mentahnya di sebelah kanan.")
+    # st.caption("Data pegawai bersifat tetap (ditarik dari sumber lain) — setiap skor bisa ditelusuri ke kolom mentahnya di sebelah kanan.")
 
     with st.container(border=True):
         fcol1, fcol2, fcol3, fcol4 = st.columns([2, 1.3, 1.3, 1.3])
@@ -464,7 +464,7 @@ def page_pegawai(df):
         view = view[view["Nama"].str.contains(q, case=False) | view["NIP"].astype(str).str.contains(q)]
     view = view[view["Pangkat"].isin(f_pangkat) & view["Satker"].isin(f_satker) & view["Status_Akhir"].isin(f_status)]
 
-    tab_ringkas, tab_lengkap = st.tabs(["Tampilan ringkas", "Tampilan lengkap (semua kolom skor)"])
+    tab_ringkas, tab_lengkap = st.tabs(["Tampilan ringkas", "Tampilan lengkap"])
 
     ringkas_cols = [
         "NIP", "Nama", "Satker", "Pangkat", "Sublevel",
@@ -533,12 +533,12 @@ def page_pegawai(df):
 # Page: Gate Keputusan
 # ---------------------------------------------------------------------------
 def page_gate(df):
-    st.markdown("## Gate Keputusan BI Wide")
-    st.caption(
-        "Alur: Syarat Administrasi → Kriteria KPP → cek Grade. Pegawai **Reguler** yang lolos "
-        "diarahkan ke jalur Promosi Grade; pegawai **Senior** yang lolos masuk ke Readiness KPP "
-        "dan Prioritisasi Kuadran."
-    )
+    st.markdown("## Penentuan Kandidat KPP BI Wide")
+    # st.caption(
+    #     "Alur: Syarat Administrasi → Kriteria KPP → cek Grade. Pegawai **Reguler** yang lolos "
+    #     "diarahkan ke jalur Promosi Grade; pegawai **Senior** yang lolos masuk ke Readiness KPP "
+    #     "dan Prioritisasi Kuadran."
+    # )
 
     tab1, tab2, tab3 = st.tabs(["Syarat Administrasi", "Kriteria KPP", "Grade Senior / MDG"])
 
@@ -593,7 +593,7 @@ def page_gate(df):
 
 
 # ---------------------------------------------------------------------------
-# Page: Master Data (CRUD)
+# Page: Pengaturan (CRUD)
 # ---------------------------------------------------------------------------
 def crud_section(sheet, key_col, value_cols, value_step=0.01, value_format="%.4f"):
     df_ref = st.session_state[f"ref_{sheet}"]
@@ -641,7 +641,7 @@ def crud_section(sheet, key_col, value_cols, value_step=0.01, value_format="%.4f
 
 
 def page_master():
-    st.markdown("## Master Data")
+    st.markdown("## Pengaturan")
     st.caption(
         "Tabel referensi yang menentukan bobot & konversi skor. "
         "Data pegawai TIDAK dikelola di sini — dianggap sumber tetap dari sistem lain."
@@ -677,7 +677,7 @@ if page == "Dashboard":
     page_dashboard(df)
 elif page == "Data Pegawai":
     page_pegawai(df)
-elif page == "Gate Keputusan":
+elif page == "Penentuan Kandidat KPP":
     page_gate(df)
-elif page == "Master Data":
+elif page == "Pengaturan":
     page_master()
