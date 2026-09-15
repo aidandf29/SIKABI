@@ -295,16 +295,17 @@ with st.sidebar:
     st.divider()
 
     st.download_button(
-        "Unduh data (.xlsx)",
+        "Sinkronisasi data dengan HRIS & KATALIS",
         icon=":material/download:",
         data=workbook_bytes(),
         file_name="sikabi_data.xlsx",
         use_container_width=True,
+         help="Integrasi belum tersedia — memerlukan koneksi API HRIS dan KATALIS BI.",
     )
     st.button(
         "Sinkronisasi data dengan HRIS & KATALIS",
         icon=":material/sync:",
-        # use_container_width=True,
+        use_container_width=True,
         disabled= False,
         help="Integrasi belum tersedia — memerlukan koneksi API HRIS dan KATALIS BI.",
     )
