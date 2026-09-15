@@ -26,7 +26,7 @@ from scoring import (
 
 BASE_DIR = os.path.dirname(__file__)
 DATA_PATH = os.path.join(BASE_DIR, "data", "sikabi_data.xlsx")
-LOGO_PATH = os.path.join(BASE_DIR, "assets", "Sikabi.png")
+LOGO_PATH = os.path.join(BASE_DIR, "assets", "logo header.png")
 HERO_BG_PATH = os.path.join(BASE_DIR, "assets", "background.png")
 
 REF_SHEETS = [
@@ -186,10 +186,17 @@ st.markdown(
     .sikabi-dot {{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:8px; }}
 
     /* Rajawali-inspired dashboard hero */
+    /* Use the available main canvas more fully */
+    .block-container {{
+        max-width: 100% !important;
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+        padding-top: 0.75rem !important;
+    }}
     .sikabi-hero {{
-        width: 100%;
+        width: calc(100% + 2.5rem);
         min-height: 385px;
-        margin: -1.5rem 0 1.25rem 0;
+        margin: -0.75rem -1.25rem 1.25rem -1.25rem;
         background-size: cover;
         background-position: center 45%;
         border-radius: 0 0 14px 14px;
@@ -198,19 +205,19 @@ st.markdown(
         color: #FFFFFF !important;
     }}
     .sikabi-hero-inner {{
-        padding: 42px 48px 34px 48px;
+        padding: 34px 40px 30px 40px;
     }}
     .sikabi-brand-row {{
         display: flex;
         align-items: center;
-        gap: 22px;
-        max-width: 1050px;
+        gap: 20px;
+        max-width: 1180px;
     }}
     .sikabi-hero-logo {{
-        flex: 0 0 105px;
+        flex: 0 0 210px;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         filter: drop-shadow(0 2px 4px rgba(0,0,0,0.28));
     }}
     .sikabi-hero-title {{
@@ -237,8 +244,8 @@ st.markdown(
         text-shadow: 1px 1px 4px rgba(0,0,0,0.55);
     }}
     .sikabi-hero-panel {{
-        margin-top: 30px;
-        padding: 25px 28px 22px 28px;
+        margin-top: 24px;
+        padding: 20px 24px 18px 24px;
         border-radius: 14px;
         background: rgba(8,18,25,0.58);
         border: 1px solid rgba(255,255,255,0.17);
@@ -246,7 +253,7 @@ st.markdown(
         backdrop-filter: blur(9px);
     }}
     .sikabi-hero-panel-title {{
-        font-size: 1.7rem;
+        font-size: 1.35rem;
         font-weight: 750;
         color: #FFFFFF !important;
         margin-bottom: 20px;
@@ -262,7 +269,7 @@ st.markdown(
         margin-bottom: 5px;
     }}
     .hero-value {{
-        font-size: 2rem;
+        font-size: 1.75rem;
         line-height: 1.05;
         font-weight: 800;
         color: #FFFFFF !important;
@@ -275,7 +282,16 @@ st.markdown(
         color: rgba(255,255,255,0.62) !important;
     }}
     @media (max-width: 900px) {{
-        .sikabi-hero-inner {{ padding: 32px 24px 26px 24px; }}
+        .block-container {{
+            padding-left: 0.75rem !important;
+            padding-right: 0.75rem !important;
+        }}
+        .sikabi-hero {{
+            width: calc(100% + 1.5rem);
+            margin-left: -0.75rem;
+            margin-right: -0.75rem;
+        }}
+        .sikabi-hero-inner {{ padding: 28px 24px 24px 24px; }}
         .sikabi-brand-row {{ align-items: flex-start; }}
         .sikabi-hero-title {{ font-size: 2.4rem; }}
         .sikabi-hero-subtitle {{ font-size: 1.05rem; }}
@@ -314,7 +330,7 @@ def dashboard_hero(df):
     logo = f"data:image/png;base64,{LOGO_B64}" if LOGO_B64 else ""
 
     logo_html = (
-        f'<img src="{logo}" style="width:105px; max-height:105px; object-fit:contain;">'
+        f'<img src="{logo}" style="width:210px; max-width:100%; max-height:82px; object-fit:contain; object-position:left center;">'
         if logo else ""
     )
 
@@ -342,7 +358,12 @@ def dashboard_hero(df):
         </div>
     </div>
     """
-    st.markdown(hero_html, unsafe_allow_html=True)
+    # st.html renders the hero as real HTML instead of allowing Markdown to escape
+    # nested divs (which caused the panel markup to appear as literal text).
+    if hasattr(st, "html"):
+        st.html(hero_html)
+    else:
+        st.markdown(hero_html, unsafe_allow_html=True)
 
 
 def metric_card(label, value, sub=None, accent=None):
