@@ -192,12 +192,12 @@ st.markdown(
         max-width: 100% !important;
         padding-left: 1.25rem !important;
         padding-right: 1.25rem !important;
-        padding-top: 0.15rem !important;
+        padding-top: 0 !important;
     }}
     .sikabi-hero {{
         width: calc(100% + 2.5rem);
         min-height: 385px;
-        margin: -0.15rem -1.25rem 1.25rem -1.25rem;
+        margin: -2.2rem -1.25rem 1.25rem -1.25rem;
         background-size: cover;
         background-position: center 45%;
         border-radius: 0 0 14px 14px;
@@ -211,11 +211,11 @@ st.markdown(
     .sikabi-brand-row {{
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 6px;
         max-width: 1180px;
     }}
     .sikabi-hero-logo {{
-        flex: 0 0 210px;
+        flex: 0 0 215px;
         display: flex;
         align-items: center;
         justify-content: flex-start;
@@ -304,14 +304,26 @@ st.markdown(
 )
 
 
-def _img_b64(path):
+def _img_b64(path, crop_transparent=False):
     if not os.path.exists(path):
         return None
+    if crop_transparent:
+        try:
+            img = Image.open(path).convert("RGBA")
+            alpha = img.getchannel("A")
+            bbox = alpha.getbbox()
+            if bbox:
+                img = img.crop(bbox)
+            buf = io.BytesIO()
+            img.save(buf, format="PNG")
+            return base64.b64encode(buf.getvalue()).decode("utf-8")
+        except Exception:
+            pass
     with open(path, "rb") as f:
         return base64.b64encode(f.read()).decode("utf-8")
 
 
-LOGO_B64 = _img_b64(HERO_LOGO_PATH)
+LOGO_B64 = _img_b64(HERO_LOGO_PATH, crop_transparent=True)
 HERO_BG_B64 = _img_b64(HERO_BG_PATH)
 
 
@@ -331,7 +343,7 @@ def dashboard_hero(df):
     logo = f"data:image/png;base64,{LOGO_B64}" if LOGO_B64 else ""
 
     logo_html = (
-        f'<img src="{logo}" style="width:210px; max-width:100%; max-height:82px; object-fit:contain; object-position:left center;">'
+        f'<img src="{logo}" style="width:300px; max-width:none; max-height:135px; transform:translateX(-2px); object-fit:contain; object-position:left center;">'
         if logo else ""
     )
 
