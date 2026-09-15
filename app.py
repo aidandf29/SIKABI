@@ -383,7 +383,7 @@ def page_dashboard(df):
                 fig.add_hline(y=0, line_dash="dash", line_color="#BFC5CA")
                 fig.add_vline(x=0, line_dash="dash", line_color="#BFC5CA")
                 fig.update_layout(
-                    height=400, margin=dict(l=10, r=10, t=10, b=10),
+                    height=300, margin=dict(l=10, r=10, t=10, b=10),
                     plot_bgcolor=SURFACE, paper_bgcolor=SURFACE,
                     xaxis_title="Δ MDP vs mean pangkat (tahun)",
                     yaxis_title="Δ QScore vs mean pangkat",
@@ -438,7 +438,7 @@ def page_dashboard(df):
             text=counts.values.astype(int), textposition="outside",
         ))
         fig2.update_layout(
-            height=300, margin=dict(l=10, r=10, t=10, b=10),
+            height=220, margin=dict(l=10, r=10, t=10, b=10),
             plot_bgcolor=SURFACE, paper_bgcolor=SURFACE,
             yaxis_title="Jumlah pegawai", font=dict(color=INK, size=12),
             showlegend=False,
