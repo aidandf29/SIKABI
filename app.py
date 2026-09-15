@@ -41,12 +41,13 @@ LINE = "#E6E8EA"
 SURFACE = "#FFFFFF"
 CANVAS = "#F5F6F4"
 BRAND = "#1E3A52"
-BRAND_DEEP = "#0F2130"
+BRAND_DEEP = "#173449"
 TEAL = "#2F7A6F"
 AMBER = "#B9821F"
 RED = "#B0574A"
 
 KUADRAN_COLOR = {"I": "#2F7A6F", "II": "#6E9750", "III": "#B9821F", "IV": "#B0574A"}
+KUADRAN_BG = {"I": "#EEF7F5", "II": "#F1F6EC", "III": "#FBF5E9", "IV": "#FAEFEC"}
 
 logo_img = Image.open(LOGO_PATH) if os.path.exists(LOGO_PATH) else None
 
@@ -72,11 +73,6 @@ st.markdown(
 
     h1, h2, h3, h4 {{ color: {INK}; font-weight: 600; }}
     p, span, label, div {{ color: {INK}; }}
-
-    /* Main-page branding: logo sits above each page title */
-    [data-testid="stImage"] {{
-        margin-bottom: 0.15rem;
-    }}
 
     /* Sidebar */
     section[data-testid="stSidebar"] {{
@@ -178,7 +174,12 @@ st.markdown(
         display: flex; justify-content: space-between; align-items: center;
         padding: 10px 14px; border: 1px solid {LINE}; border-radius: 10px;
         margin-bottom: 8px; background: {SURFACE};
+        transition: border-color 0.15s ease, background 0.15s ease;
     }}
+    .sikabi-quad-row.quad-I {{ background: #EEF7F5; border-color: #B7D9D3; }}
+    .sikabi-quad-row.quad-II {{ background: #F1F6EC; border-color: #C9DDBB; }}
+    .sikabi-quad-row.quad-III {{ background: #FBF5E9; border-color: #E5C98E; }}
+    .sikabi-quad-row.quad-IV {{ background: #FAEFEC; border-color: #DFB8AF; }}
     .sikabi-dot {{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:8px; }}
     </style>
     """,
@@ -189,7 +190,7 @@ st.markdown(
 def page_header(title):
     """Render the SIKABI logo above the page title in the main content area."""
     if logo_img:
-        st.image(logo_img, width=350)
+        st.image(logo_img, width=190)
     st.markdown(f"## {title}")
 
 
@@ -266,6 +267,17 @@ STATUS_OPTS = ["Proses KPP", "Ready Promosi Grade", "Belum Siap Promosi Grade", 
 # Sidebar navigation
 # ---------------------------------------------------------------------------
 with st.sidebar:
+    if logo_img:
+        st.image(logo_img, use_container_width=True)
+    else:
+        st.markdown("### 🏦 SIKABI")
+
+    st.markdown(
+        "<div style='text-align:center;font-size:12px;color:rgba(255,255,255,0.55);"
+        "margin-top:-6px;margin-bottom:14px;'>DSDM · Bank Indonesia</div>",
+        unsafe_allow_html=True,
+    )
+
     NAV_ITEMS = [
         ("Dashboard", "dashboard"),
         ("Data Pegawai", "group"),
@@ -392,11 +404,11 @@ def page_dashboard(df):
                 count = len(members)
                 dim = "" if k in f_kuadran else "opacity:0.4;"
                 st.markdown(
-                    f"<div class='sikabi-quad-row' style='{dim}'>"
+                    f"<div class='sikabi-quad-row quad-{k}' style='{dim}'>"
                     f"<div><span class='sikabi-dot' style='background:{KUADRAN_COLOR[k]}'></span>"
                     f"<b>Kuadran {k}</b><br><span style='font-size:11.5px;color:{INK_SOFT};margin-left:17px;"
                     f"display:inline-block;max-width:230px'>{KUADRAN_DESC[k]}</span></div>"
-                    f"<div style='font-size:20px;font-weight:700'>{count}</div></div>",
+                    f"<div style='font-size:20px;font-weight:700;color:{KUADRAN_COLOR[k]}'>{count}</div></div>",
                     unsafe_allow_html=True,
                 )
                 with st.popover(f"Lihat {count} nama di Kuadran {k}", use_container_width=True, disabled=count == 0):
