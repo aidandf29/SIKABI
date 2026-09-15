@@ -441,6 +441,28 @@ def df_to_xlsx_bytes(dframe):
     return buf.getvalue()
 
 
+def format_boolean_table(dframe):
+    """Make boolean/check columns visually clearer in Streamlit tables."""
+    styled = dframe.copy()
+    bool_cols = styled.select_dtypes(include=["bool"]).columns.tolist()
+
+    # Replace Streamlit's default grey checkbox renderer with readable symbols.
+    for col in bool_cols:
+        styled[col] = styled[col].map({True: "✓", False: "—"})
+
+    if bool_cols:
+        def _style_boolean(value):
+            if value == "✓":
+                return "color: #2F7A6F; font-weight: 700; font-size: 16px; text-align: center;"
+            if value == "—":
+                return "color: #9AA5AD; font-weight: 600; font-size: 15px; text-align: center;"
+            return ""
+
+        styled = styled.style.map(_style_boolean, subset=bool_cols)
+
+    return styled
+
+
 init_state()
 df = recompute()
 
@@ -739,7 +761,7 @@ def page_gate(df):
         m2.metric("Tidak Lolos", f"{total - lolos:,}".replace(",", "."))
         cols = ["Nama", "Pangkat"] + list(ADMIN_CHECK_LABELS.keys()) + ["Lolos_Administrasi"]
         show = view[cols].rename(columns={**ADMIN_CHECK_LABELS, "Lolos_Administrasi": "LOLOS ADMINISTRASI"})
-        st.dataframe(show, use_container_width=True, hide_index=True, height=420)
+        st.dataframe(format_boolean_table(show), use_container_width=True, hide_index=True, height=420)
 
     with tab2:
         admin_pop = df[df["Pangkat"].isin(f_pangkat) & df["Lolos_Administrasi"]]
@@ -749,7 +771,7 @@ def page_gate(df):
         m2.metric("Dari yang lolos administrasi", f"{len(admin_pop):,}".replace(",", "."))
         cols = ["Nama", "Pangkat", "Passing_Grade_QScore", "QScore"] + list(KPP_CHECK_LABELS.keys()) + ["Lolos_KPP"]
         show = view[cols].rename(columns={**KPP_CHECK_LABELS, "Lolos_KPP": "LOLOS KPP"})
-        st.dataframe(show, use_container_width=True, hide_index=True, height=420)
+        st.dataframe(format_boolean_table(show), use_container_width=True, hide_index=True, height=420)
 
     with tab3:
         kpp_pop = df[df["Pangkat"].isin(f_pangkat) & df["Lolos_KPP"]]
@@ -771,7 +793,7 @@ def page_gate(df):
             "Chk_Ready_Promosi_Grade": "MDG >= threshold?",
             "Chk_Ready_Promosi_Pangkat": "MDGS >= threshold?",
         })
-        st.dataframe(show, use_container_width=True, hide_index=True, height=420)
+        st.dataframe(format_boolean_table(show), use_container_width=True, hide_index=True, height=420)
 
 
 # ---------------------------------------------------------------------------
