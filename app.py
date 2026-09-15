@@ -94,20 +94,27 @@ st.markdown(
         border-color: {TEAL};
         color: {TEAL};
     }}
-    div[data-testid="stSidebar"] .stButton > button,
-    div[data-testid="stSidebar"] .stDownloadButton > button {{
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.15);
+    section[data-testid="stSidebar"] .stButton > button,
+    section[data-testid="stSidebar"] .stDownloadButton > button {{
+        background: rgba(255,255,255,0.06) !important;
+        border: 1px solid rgba(255,255,255,0.18) !important;
         color: #FFFFFF !important;
         width: 100%;
         text-align: left;
         justify-content: flex-start;
     }}
-    div[data-testid="stSidebar"] .stButton > button:disabled {{
-        opacity: 0.45;
+    section[data-testid="stSidebar"] .stButton > button:hover,
+    section[data-testid="stSidebar"] .stDownloadButton > button:hover {{
+        background: rgba(255,255,255,0.14) !important;
+        border-color: rgba(255,255,255,0.35) !important;
         color: #FFFFFF !important;
     }}
-    div[data-testid="stSidebar"] button[kind="primary"] {{
+    section[data-testid="stSidebar"] .stButton > button:disabled {{
+        opacity: 0.45 !important;
+        color: #FFFFFF !important;
+    }}
+    section[data-testid="stSidebar"] button[kind="primary"],
+    section[data-testid="stSidebar"] button[kind="primary"]:hover {{
         background: {TEAL} !important;
         border: 1px solid {TEAL} !important;
         color: #FFFFFF !important;
