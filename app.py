@@ -346,13 +346,13 @@ def page_dashboard(df):
     with left:
         with st.container(border=True):
             st.markdown(f"**Peta Kuadran** &nbsp;·&nbsp; {len(visible)} dari {len(kpp_pop)} pegawai Proses KPP")
-            st.caption(
-                "Hanya pegawai **Grade Senior** yang lolos Kriteria KPP yang masuk di sini "
-                "(Grade Reguler mengikuti jalur Promosi Grade tersendiri, lihat tab Gate Keputusan). "
-                "Sumbu = selisih QScore dan Masa Dinas Pangkat (MDP = MDG + MDGS) terhadap **rata-rata "
-                "pangkatnya masing-masing** — bukan rata-rata gabungan semua pangkat. Titik di kanan-atas "
-                "dari garis 0,0 = Kuadran I, dan seterusnya searah jarum jam."
-            )
+            # st.caption(
+            #     "Hanya pegawai **Grade Senior** yang lolos Kriteria KPP yang masuk di sini "
+            #     "(Grade Reguler mengikuti jalur Promosi Grade tersendiri, lihat tab Gate Keputusan). "
+            #     "Sumbu = selisih QScore dan Masa Dinas Pangkat (MDP = MDG + MDGS) terhadap **rata-rata "
+            #     "pangkatnya masing-masing** — bukan rata-rata gabungan semua pangkat. Titik di kanan-atas "
+            #     "dari garis 0,0 = Kuadran I, dan seterusnya searah jarum jam."
+            # )
             if len(visible) > 0:
                 fig = go.Figure()
                 for k in ["I", "II", "III", "IV"]:
