@@ -41,7 +41,8 @@ LINE = "#E6E8EA"
 SURFACE = "#FFFFFF"
 CANVAS = "#F5F6F4"
 BRAND = "#1E3A52"
-BRAND_DEEP = "#173449"
+BRAND_DEEP = "#E6F0F3"
+BRAND_DEEP_TEXT = "#173449"
 TEAL = "#2F7A6F"
 AMBER = "#B9821F"
 RED = "#B0574A"
@@ -79,8 +80,8 @@ st.markdown(
         background: {BRAND_DEEP};
         border-right: none;
     }}
-    section[data-testid="stSidebar"] * {{ color: rgba(255,255,255,0.85) !important; }}
-    section[data-testid="stSidebar"] hr {{ border-color: rgba(255,255,255,0.12); }}
+    section[data-testid="stSidebar"] * {{ color: {BRAND_DEEP_TEXT} !important; }}
+    section[data-testid="stSidebar"] hr {{ border-color: rgba(15,33,48,0.14); }}
 
     /* Buttons */
     .stButton > button, .stDownloadButton > button {{
@@ -97,18 +98,18 @@ st.markdown(
     }}
     section[data-testid="stSidebar"] .stButton > button,
     section[data-testid="stSidebar"] .stDownloadButton > button {{
-        background: rgba(255,255,255,0.06) !important;
-        border: 1px solid rgba(255,255,255,0.18) !important;
-        color: #FFFFFF !important;
+        background: rgba(255,255,255,0.55) !important;
+        border: 1px solid rgba(15,33,48,0.16) !important;
+        color: #173449 !important;
         width: 100%;
         text-align: left;
         justify-content: flex-start;
     }}
     section[data-testid="stSidebar"] .stButton > button:hover,
     section[data-testid="stSidebar"] .stDownloadButton > button:hover {{
-        background: rgba(255,255,255,0.14) !important;
-        border-color: rgba(255,255,255,0.35) !important;
-        color: #FFFFFF !important;
+        background: rgba(255,255,255,0.85) !important;
+        border-color: rgba(15,33,48,0.28) !important;
+        color: #173449 !important;
     }}
     section[data-testid="stSidebar"] .stButton > button:disabled {{
         opacity: 0.45 !important;
@@ -172,7 +173,7 @@ st.markdown(
 
     .sikabi-quad-row {{
         display: flex; justify-content: space-between; align-items: center;
-        padding: 10px 14px; border: 1px solid {LINE}; border-radius: 10px;
+        padding: 12px 14px; border: 1px solid {LINE}; border-radius: 10px;
         margin-bottom: 8px; background: {SURFACE};
         transition: border-color 0.15s ease, background 0.15s ease;
     }}
@@ -383,7 +384,7 @@ def page_dashboard(df):
                 fig.add_hline(y=0, line_dash="dash", line_color="#BFC5CA")
                 fig.add_vline(x=0, line_dash="dash", line_color="#BFC5CA")
                 fig.update_layout(
-                    height=300, margin=dict(l=10, r=10, t=10, b=10),
+                    height=330, margin=dict(l=10, r=10, t=10, b=10),
                     plot_bgcolor=SURFACE, paper_bgcolor=SURFACE,
                     xaxis_title="Δ MDP vs mean pangkat (tahun)",
                     yaxis_title="Δ QScore vs mean pangkat",
@@ -395,6 +396,26 @@ def page_dashboard(df):
                 st.plotly_chart(fig, use_container_width=True)
             else:
                 st.info("Tidak ada data pada kombinasi filter ini.")
+
+        st.write("")
+        with st.container(border=True):
+            st.markdown("**Distribusi Readiness Promosi**")
+            scoped_admin = df[df["Pangkat"].isin(f_pangkat) & df["Satker"].isin(f_satker)]
+            counts = scoped_admin["Readiness"].value_counts().reindex(READINESS_ORDER).fillna(0)
+            fig2 = go.Figure(go.Bar(
+                x=counts.index, y=counts.values,
+                marker_color=[READINESS_COLOR[r] for r in counts.index],
+                text=counts.values.astype(int), textposition="outside",
+            ))
+            fig2.update_layout(
+                height=190, margin=dict(l=8, r=8, t=6, b=8),
+                plot_bgcolor=SURFACE, paper_bgcolor=SURFACE,
+                yaxis_title="Jumlah", font=dict(color=INK, size=11),
+                showlegend=False,
+            )
+            fig2.update_xaxes(gridcolor=LINE)
+            fig2.update_yaxes(gridcolor=LINE)
+            st.plotly_chart(fig2, use_container_width=True)
 
     with right:
         with st.container(border=True):
@@ -421,31 +442,6 @@ def page_dashboard(df):
                             file_name=f"kuadran_{k}.xlsx",
                             key=f"dl_kuadran_{k}",
                         )
-
-    st.write("")
-    with st.container(border=True):
-        st.markdown("**Distribusi Readiness Promosi**")
-        # st.caption(
-        #     "Ready Now/Next dihitung dari MDGS (masa dinas grade senior) vs threshold promosi pangkat. "
-        #     "Ready/Belum Siap Promosi Grade dihitung dari MDG (masa dinas grade) vs threshold naik grade "
-        #     "untuk pegawai Reguler. Tidak Eligible = tidak lolos Administrasi/Kriteria KPP."
-        # )
-        scoped_admin = df[df["Pangkat"].isin(f_pangkat) & df["Satker"].isin(f_satker)]
-        counts = scoped_admin["Readiness"].value_counts().reindex(READINESS_ORDER).fillna(0)
-        fig2 = go.Figure(go.Bar(
-            x=counts.index, y=counts.values,
-            marker_color=[READINESS_COLOR[r] for r in counts.index],
-            text=counts.values.astype(int), textposition="outside",
-        ))
-        fig2.update_layout(
-            height=220, margin=dict(l=10, r=10, t=10, b=10),
-            plot_bgcolor=SURFACE, paper_bgcolor=SURFACE,
-            yaxis_title="Jumlah pegawai", font=dict(color=INK, size=12),
-            showlegend=False,
-        )
-        fig2.update_xaxes(gridcolor=LINE)
-        fig2.update_yaxes(gridcolor=LINE)
-        st.plotly_chart(fig2, use_container_width=True)
 
     st.write("")
     with st.container(border=True):
